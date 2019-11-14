@@ -19,3 +19,4 @@ parser.add_option('-m', '--mac', dest='new_mac', help='The New MAC address')
 (options, arguments) = parser.parse_args()
 
 change_mac(options.interface, options.new_mac)
+# maybe github will work this time
