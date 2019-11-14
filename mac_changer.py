@@ -1,5 +1,5 @@
 #!usr/bin/python3
-#hoooray github repository is now working!!!
+#hooray github repository is now working!!!
 
 import subprocess
 import optparse
