@@ -10,7 +10,7 @@ def get_arguments():
     (options, arguments) = parser.parse_args()
     if not options.interface:
         parser.error('[-] Please specify an interface, use --help for more info.')
-    elifnot options.new_mac:
+    elif not options.new_mac:
         parser.error('[-] Please specify a new_mac value, use --help for more info.')
     return options
 
@@ -21,5 +21,5 @@ def change_mac(interface, new_mac):
     subprocess.call(['ifconfig', interface, 'up'])
 
 
-get_arguments()
+options = get_arguments()
 change_mac(options.interface, options.new_mac)
