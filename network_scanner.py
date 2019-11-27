@@ -1,6 +1,7 @@
 #!usr/bin/python3
 import scapy.all as scapy
 import argparse
+# route -n to see the gateway
 
 def get_arguments():
     parser = argparse.ArgumentParser()
